@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Search Suggestions',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: SearchSuggestions(),
+    );
+  }
+}
+
+class SearchSuggestions extends StatefulWidget {
+  @override
+  _SearchSuggestionsState createState() => _SearchSuggestionsState();
+}
+
+class _SearchSuggestionsState extends State<SearchSuggestions> {
+  final TextEditingController _controller = TextEditingController();
+  final List<String> _allSuggestions = [
+    'New York',
+    'Los Angeles',
+    'Chicago',
+    'Houston',
+    'Phoenix',
+    'San Francisco',
+    'Seattle',
+    'Boston',
+  ];
+  List<String> _filteredSuggestions = [];
+
+  void _filterSuggestions(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredSuggestions = [];
+      } else {
+        _filteredSuggestions = _allSuggestions
+            .where((item) =>
+                item.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Search Suggestions'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              onChanged: _filterSuggestions,
+              decoration: InputDecoration(
+                labelText: 'Enter location',
+                border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.search),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredSuggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_filteredSuggestions[index]),
+                    onTap: () {
+                      _controller.text = _filteredSuggestions[index];
+                      setState(() {
+                        _filteredSuggestions = [];
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
